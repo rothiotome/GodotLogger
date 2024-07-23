@@ -22,12 +22,13 @@ const COLORS = {
 const LOG_FORMAT = "{level} [{time}]{prefix} {message} "
 
 
-var CURRENT_LOG_LEVEL=LogLevel.INFO
+var CURRENT_LOG_LEVEL = LogLevel.INFO
 var CURRENT_FILE_LEVEL = LogLevel.DEBUG
 var USE_ISOTIME: bool = false
+var OVERRIDE_FILE: bool = true
 var write_logs: bool = true
 var printing_stack: bool = false
-var log_path: String = "res://.logs/game.log"
+var log_path: String = "res://.logs/game.log" 
 var _config
 
 var _prefix  = ""
@@ -37,6 +38,7 @@ var _file: FileAccess
 
 
 func _ready():
+	_set_log_path(Config.get_var("override-file","true"))
 	_set_loglevel(Config.get_var("log-level","info"))
 	_set_time_format(Config.get_var("use-isotime", "false"))
 
@@ -64,6 +66,15 @@ func _set_time_format(level:String):
 		"false": 
 			USE_ISOTIME = false
 
+func _set_log_path(level:String):
+	match level.to_lower():
+		"true":
+			log_path = "user://.logs/game.log"
+		"false": 
+			var file_name = Time.get_datetime_string_from_system().replace(":", "-")
+			log_path = "user://.logs/%s.log" % file_name
+			
+	logger("setting log path",{"level":level},LogLevel.INFO)
 
 func with(prefix:String="",args:Dictionary={}) ->Log :
 	var l = Log.new()
