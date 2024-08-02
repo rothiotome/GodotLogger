@@ -1,4 +1,4 @@
-class_name JsonData
+class_name LoggerJsonData
 
 const REQUIRED_OBJECT_SUFFIX="_r"
 const COMPACT_VAR_SUFFIX="_c"

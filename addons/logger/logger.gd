@@ -1,5 +1,5 @@
 @tool
-class_name Log
+class_name Logger
 extends Node
 
 signal log_message(level:LogLevel,message:String)
@@ -38,9 +38,9 @@ var _file: FileAccess
 
 
 func _ready():
-	_set_log_path(Config.get_var("override-file","true"))
-	_set_loglevel(Config.get_var("log-level","info"))
-	_set_time_format(Config.get_var("use-isotime", "false"))
+	_set_log_path(LoggerConfig.get_var("override-file","true"))
+	_set_loglevel(LoggerConfig.get_var("log-level","info"))
+	_set_time_format(LoggerConfig.get_var("use-isotime","false"))
 
 
 func _set_loglevel(level:String):
@@ -76,8 +76,8 @@ func _set_log_path(level:String):
 			
 	logger("setting log path",{"level":level},LogLevel.INFO)
 
-func with(prefix:String="",args:Dictionary={}) ->Log :
-	var l = Log.new()
+func with(prefix:String="",args:Dictionary={}) -> Logger :
+	var l = Logger.new()
 	l.CURRENT_LOG_LEVEL = self.CURRENT_LOG_LEVEL
 	l._prefix = " %s |" % prefix
 	for k in args:
@@ -141,7 +141,7 @@ func _add_values(msg, values):
 				msg += "{"
 				for k in values:
 					if typeof(values[k]) == TYPE_OBJECT && values[k] != null:
-						msg += '"{k}":{v},'.format({"k":k,"v":JSON.stringify(JsonData.to_dict(values[k],false))})
+						msg += '"{k}":{v},'.format({"k":k,"v":JSON.stringify(LoggerJsonData.to_dict(values[k],false))})
 					else:
 						msg += '"{k}":{v},'.format({"k":k,"v":JSON.stringify(values[k])})
 				msg = msg.left(msg.length()-1)+"}"
@@ -149,12 +149,12 @@ func _add_values(msg, values):
 			if values == null:
 				msg += JSON.stringify(null)
 			else:
-				msg += JSON.stringify(JsonData.unmarshal_bytes_to_dict(values))
+				msg += JSON.stringify(LoggerJsonData.unmarshal_bytes_to_dict(values))
 		TYPE_OBJECT:
 			if values == null:
 				msg += JSON.stringify(null)
 			else:
-				msg += JSON.stringify(JsonData.to_dict(values,false))
+				msg += JSON.stringify(LoggerJsonData.to_dict(values,false))
 		TYPE_NIL:
 			msg += JSON.stringify(null)
 		_:
